@@ -10,14 +10,16 @@
 <form asp-action="AddBlogPost" method="post" asp-controller="Home">
 
 
+
+
     <div class="form-group">
         <label asp-for="title">Blog Title</label>
-        <input class="form-control" asp-for="title" placeholder="Enter Blog Title">
+        <input class="form-control" asp-for="title" id="title" placeholder="Enter Blog Title">
     </div>
 
     <div class="form-group">
         <label asp-for="author">Author</label>
-        <input class="form-control" asp-for="author" placeholder="Enter Your Name">
+        <input class="form-control" asp-for="author" id="author" placeholder="Enter Your Name">
     </div>
 
     <div class="form-group">
@@ -25,5 +27,7 @@
         <textarea asp-for="content" class="form-control" id="content" resize="none" rows="10" placeholder="Start Writing..."></textarea>
     </div>
 
-    <button type="submit" class="btn btn-primary">Post Blog</button>
+    <button type="submit" id="btn" class="btn btn-primary">Post Blog</button>
 </form>
+
+

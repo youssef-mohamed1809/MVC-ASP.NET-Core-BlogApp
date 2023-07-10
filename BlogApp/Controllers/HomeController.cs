@@ -7,7 +7,7 @@ namespace BlogApp.Controllers
 {
     public class HomeController : Controller
     {
-        List<Blog> blogs;
+        //List<Blog> blogs;
         IConfiguration _configuration;
         private readonly ILogger<HomeController> _logger;
         string connectionString;
@@ -15,36 +15,36 @@ namespace BlogApp.Controllers
 
         public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
         {
-            blogs = new List<Blog>();
             _logger = logger;
             _configuration = configuration;
             connectionString = _configuration.GetConnectionString("DefaultConnectionString");
             con = new SqlConnection(connectionString);
             con.Open();
-            getAllBlogs();
         }
 
-        public void getAllBlogs()
+        public List<Blog> getAllBlogs()
         {
+            List<Blog> myBlogs = new List<Blog>();
             string stmt = "select * from blogs";
             SqlCommand cmd = new SqlCommand(stmt, con);
             SqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
-            {
-           
+            {           
                     DateTime dt = (DateTime)reader["dateCreated"];
                     DateOnly d = DateOnly.FromDateTime(dt);
-                    blogs.Add(new Blog((string)reader["title"], (string)reader["content"],
+                    myBlogs.Add(new Blog((string)reader["title"], (string)reader["content"],
                         (string)reader["author"], (int)reader["views"], d));
-                
             }
+
+            return myBlogs;
+           
         }
 
 
         public IActionResult Index()
         {
-            //getAllBlogs();
-            return View(blogs);
+            List<Blog> myBlogs = getAllBlogs();
+            return View("Index", myBlogs);
         }
 
         public IActionResult Privacy()
@@ -54,7 +54,7 @@ namespace BlogApp.Controllers
 
         public IActionResult FullBlog(string title)
         {
-            Console.WriteLine(title);
+            List<Blog> blogs = getAllBlogs();
 
             for(int i = 0; i < blogs.Count; i++)
             {
@@ -100,8 +100,8 @@ namespace BlogApp.Controllers
             cmd.Parameters.AddWithValue("@dateCreated", dt);
             cmd.Parameters.AddWithValue("@content", content);
             cmd.ExecuteNonQuery();
-
-            return View("Index");
+             return Index();
+            //Response.Redirect("/index");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
