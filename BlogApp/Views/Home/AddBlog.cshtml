@@ -1,4 +1,4 @@
-﻿@model Blog
+﻿@model MyBlog
 
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -13,18 +13,18 @@
 
 
     <div class="form-group">
-        <label asp-for="title">Blog Title</label>
-        <input class="form-control" asp-for="title" id="title" placeholder="Enter Blog Title">
+        <label asp-for="Title">Blog Title</label>
+        <input class="form-control" asp-for="Title" id="title" placeholder="Enter Blog Title">
     </div>
 
     <div class="form-group">
-        <label asp-for="author">Author</label>
-        <input class="form-control" asp-for="author" id="author" placeholder="Enter Your Name">
+        <label asp-for="Author">Author</label>
+        <input class="form-control" asp-for="Author" id="author" placeholder="Enter Your Name">
     </div>
 
     <div class="form-group">
-        <label asp-for="content">Blog</label>
-        <textarea asp-for="content" class="form-control" id="content" resize="none" rows="10" placeholder="Start Writing..."></textarea>
+        <label asp-for="Content">Blog</label>
+        <textarea asp-for="Content" class="form-control" id="content" resize="none" rows="10" placeholder="Start Writing..."></textarea>
     </div>
 
     <button type="submit" id="btn" class="btn btn-primary">Post Blog</button>

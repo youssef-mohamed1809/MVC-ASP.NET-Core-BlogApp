@@ -1,11 +1,13 @@
-﻿@*
+﻿@model MyBlog
+
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
 }
 
 
-<h1>@ViewData["Title"]</h1>
-<h4>Written by: @ViewData["Author"]</h4>
-<h5 class="text-muted">@ViewData["Date"]<br />@ViewData["Views"] Views</h5>
-<p>@ViewData["Content"]</p>
+<h1>@Model.Title</h1>
+<h4>Written by: @Model.Author</h4>
+<h5 class="text-muted">@DateOnly.FromDateTime(Model.DateCreated)<br />@Model.Views Views</h5>
+<p>@Model.Content</p>

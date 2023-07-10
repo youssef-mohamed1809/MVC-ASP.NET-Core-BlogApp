@@ -8,24 +8,22 @@ namespace BlogApp.Controllers
     public class HomeController : Controller
     {
         //List<Blog> blogs;
-        IConfiguration _configuration;
+        
         private readonly ILogger<HomeController> _logger;
-        string connectionString;
-        SqlConnection con;
+        private readonly BlogDbContext _dbContext;
+        
 
-        public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
+        public HomeController(ILogger<HomeController> logger, BlogDbContext blogDbContext)
         {
             _logger = logger;
-            _configuration = configuration;
-            connectionString = _configuration.GetConnectionString("DefaultConnectionString");
-            con = new SqlConnection(connectionString);
-            con.Open();
+            _dbContext = blogDbContext;
         }
 
-        public List<Blog> getAllBlogs()
+        public List<MyBlog> getAllBlogs()
         {
-            List<Blog> myBlogs = new List<Blog>();
-            string stmt = "select * from blogs";
+            List<MyBlog> myBlogs = _dbContext.MyBlogs.ToList();
+/*
+            string stmt = "select * from myBlogs";
             SqlCommand cmd = new SqlCommand(stmt, con);
             SqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -35,7 +33,7 @@ namespace BlogApp.Controllers
                     myBlogs.Add(new Blog((string)reader["title"], (string)reader["content"],
                         (string)reader["author"], (int)reader["views"], d));
             }
-
+*/
             return myBlogs;
            
         }
@@ -43,7 +41,7 @@ namespace BlogApp.Controllers
 
         public IActionResult Index()
         {
-            List<Blog> myBlogs = getAllBlogs();
+            List<MyBlog> myBlogs = getAllBlogs();
             return View("Index", myBlogs);
         }
 
@@ -54,26 +52,29 @@ namespace BlogApp.Controllers
 
         public IActionResult FullBlog(string title)
         {
-            List<Blog> blogs = getAllBlogs();
+            List<MyBlog> blogs = getAllBlogs();
 
+            MyBlog blog = new MyBlog();
             for(int i = 0; i < blogs.Count; i++)
             {
-                if (blogs[i].title == title)
+                if (blogs[i].Title == title)
                 {
-                    ViewData["Title"] = blogs[i].title;
-                    ViewData["Content"] = blogs[i].content;
-                    ViewData["Author"] = blogs[i].author;
-                    ViewData["Date"] = blogs[i].dateCreated;
-                    ViewData["Views"] = blogs[i].views + 1;
+                    
+                    ViewData["Title"] = blogs[i].Title;
+                    ViewData["Content"] = blogs[i].Content;
+                    ViewData["Author"] = blogs[i].Author;
+                    ViewData["Date"] = blogs[i].DateCreated;
+                    ViewData["Views"] = blogs[i].Views + 1;
+
+                    blog = _dbContext.MyBlogs.Find(blogs[i].Title);
                 }
             }
 
-            string stmt = $"update blogs set views={(int)ViewData["Views"]} where title = \'{ViewData["Title"]}\'";
-            SqlCommand cmd1 = new SqlCommand(stmt, con);
-            cmd1.ExecuteNonQuery();
+            blog.Views += 1;
+            _dbContext.SaveChanges();
 
 
-            return View();
+            return View(blog);
         }
 
         public IActionResult AddBlog()
@@ -83,25 +84,26 @@ namespace BlogApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddBlogPost(Blog blog)
+        public IActionResult AddBlogPost(MyBlog blog)
         {
-            string title = blog.title;
-            string content = blog.content;
-            string author = blog.author;
+            string title = blog.Title;
+            string content = blog.Content;
+            string author = blog.Author;
             DateTime dt = DateTime.Now;
 
 
+            MyBlog newBlog = new MyBlog();
 
-            string stmt = $"insert into blogs(title, content, author, views, dateCreated) values( @title , @content , @author, @views ,@dateCreated)";
-            SqlCommand cmd = new SqlCommand(stmt, con);
-            cmd.Parameters.AddWithValue("@title", title);
-            cmd.Parameters.AddWithValue("@author", author);
-            cmd.Parameters.AddWithValue("@views", 0);
-            cmd.Parameters.AddWithValue("@dateCreated", dt);
-            cmd.Parameters.AddWithValue("@content", content);
-            cmd.ExecuteNonQuery();
+            newBlog.Title = title;
+            newBlog.Content = content;
+            newBlog.Author = author;
+            newBlog.DateCreated = dt;
+            newBlog.Views = 0;
+
+            _dbContext.MyBlogs.Add(newBlog);
+            _dbContext.SaveChanges();
+
              return Index();
-            //Response.Redirect("/index");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

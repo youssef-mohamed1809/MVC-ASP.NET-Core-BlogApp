@@ -1,4 +1,4 @@
-﻿@model List<Blog>
+﻿@model List<MyBlog>
 
 @{
     ViewData["Title"] = "Home Page";
@@ -7,23 +7,45 @@
 
 <h1>All Blogs</h1>
 
-    @foreach(var blog in Model)
-    {
-    <div class="card mt-3" style="width: 18rem;">
-        @{
-            var parms = new Dictionary<string, string>
+<div class="container">
+        @{var currentIndex = 0; var size = Model.Count; bool done = false;}
+@while(currentIndex < size)
+{
+    <div class="row">
+
+        @for(int i = 0; i < 3 && !done; i++)
+        {
+            @if (currentIndex >= size)
             {
-                {"title",blog.title }
-            };
+                done = true;
+            }
+            else
+            {
+                <div class="col-sm">
+                    <div class="card mt-3" style="width: 18rem;">
+                        @{
+                            var parms = new Dictionary<string, string>
+                            {
+                                {"title",Model[currentIndex].Title }
+                            };
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">@Model[currentIndex].Title</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">@DateOnly.FromDateTime(Model[currentIndex].DateCreated)</h6>
+                            <h6 class="card-subtitle mb-2 text-muted">@Model[currentIndex].Views views</h6>
+                            <p class="card-text">@Model[currentIndex].Content.Substring(0, 75) ... <a asp-controller="Home" asp-action="FullBlog" asp-all-route-data="parms" class="card-link">Read More</a></p>
+
+                        </div>
+                    </div>
+                </div>
+                
+                    currentIndex++;
+               
+            }
         }
-            <div class="card-body">
-                    <h5 class="card-title">@blog.title</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">@blog.dateCreated</h6>
-                    <h6 class="card-subtitle mb-2 text-muted">@blog.views views</h6>
-            <p class="card-text">@blog.content.Substring(0, 75) ... <a asp-controller="Home" asp-action="FullBlog" asp-all-route-data="parms" class="card-link">Read More</a></p>
-                    
-            </div>
-        </div>
-    }
 
+    </div>
+}
 
+   
+</div>
